@@ -1,21 +1,21 @@
-class Defin:
+class Node:
     """"define elem"""
 
     def __init__(self, value=None, next=None):
         self.value = value
         self.next = next
 
-
-class FLL:
+class LinkedList:
     """first last and len"""
 
     def __init__(self):
-        self.first = None
-        self.last = None
+        self.head = None
+        self.tail = None
+        self.len = 0
 
     def __str__(self):
-        if self.first != None:
-            current = self.first
+        if self.head is not None:
+            current = self.head
             result = str(current.value) + '\n'
             while current.next is not None:
                 current = current.next
@@ -24,25 +24,27 @@ class FLL:
         return "Empty"
 
     def addFirst(self, elem):
-        if self.last == None:
-            self.first = self.last = Defin(elem)
+        self.len+=1
+        if self.tail == None:
+            self.head = self.tail = Node(elem)
         else:
-            self.first = Defin(elem, self.first)
+            self.head = Node(elem, self.head)
 
     def add(self, elem):
-        if self.first is None:
-            self.last = self.first = Defin(elem, None)
+        self.len += 1
+        if self.head is None:
+            self.tail = self.head = Node(elem, None)
         else:
-            self.last.next = self.last = Defin(elem, None)
+            self.tail.next = self.tail = Node(elem, None)
 
     def destroy(self):
         self.__init__()
 
-    def search1(self,elem):
+    def findIndexByValue(self, elem):
         lenght = 0
-        if self.first is None:
+        if self.head is None:
             return "list is empty"
-        current = self.first
+        current = self.head
         if current.value == elem:
             return lenght
         while current.next is not None:
@@ -52,27 +54,73 @@ class FLL:
                 return lenght
         return "not in list"
 
-
-    def addAfter(self,index, elem):
-        if self.first is None:
+    """как сделать чтобы self.len срабатывало вместо def len() """
+    def addAfter(self, index, elem):
+        self.len += 1
+        def len(self):
+            length = 1
+            if self.head is not None:
+                current = self.head
+                while current.next is not None:
+                    current = current.next
+                    length += 1
+            return length
+        if self.head is None:
             return "list is empty"
+        if index > len(self):
+            print("out of range")
+        if index < 0:
+            index = index % len(self)
         lenght = 0
         if index == 0:
-            self.first.next = Defin(elem,self.first.next)
-        current = self.first.next
+            self.head.next = Node(elem, self.head.next)
+        current = self.head.next
         while current is not None:
             lenght += 1
             if lenght == index:
-                current.next = Defin(elem, current.next)
+                current.next = Node(elem, current.next)
                 return
             current = current.next
 
-
+    """ how can it work for the first elem? """
     def delAfter(self, index):
-        if self.first is None:
+        def len(self):
+            length = 1
+            if self.head is not None:
+                current = self.head
+                while current.next is not None:
+                    current = current.next
+                    length += 1
+            return length
+        def GetByindex1(index):
+            lenght = 0
+            if self.head is None:
+                return "list is empty"
+            current = self.head
+            if index == 0:
+                return current.value
+            while current.next is not None:
+                lenght += 1
+                current = current.next
+                if index == lenght:
+                    return current
+            return "not in list"
+
+        if self.head is None:
             return "list is empty"
+        if index > len(self):
+            print("out of range")
+        if index < 0:
+            index = index % len(self)
+        if index == len(self)-1:
+            self.tail.value = ""
+        if index == len(self)-2:
+            res = GetByindex1(index)
+            res = res.next
+            res.value = res.next.value
+            res.next = res.next.next
         lenght = 0
-        current = self.first.next
+        current = self.head.next
         while current is not None and current.next is not None and current.next.next:
             lenght += 1
             if lenght == index:
@@ -83,73 +131,76 @@ class FLL:
             current = current.next
         return "invalid data"
 
-    def sort(self):
-        if self.first is None:
-            return "list is empty"
-        current = self.first
-        newlist = []
-        while current is not None:
-            newlist.append(current.value)
-            current = current.next
-        newlist = sorted(newlist)
-        result = Defin()
-        for i in newlist:
-            print(i)
+    def del_first1(self):
+        if self.head is None:
+            raise RuntimeError("Empty List")
+        current = self.head
+        result = self.head.value
+        if current.next is not None:
+            current.value = current.next.value
+            current.next = current.next.next
+
+        elif current.next is None:
+            self.head = Node('', None)
+        return
+
+    """_for_test"""
+    def del_first(self):
+        if self.head is None:
+            raise RuntimeError("Empty List")
+        current = self.head
+        result = self.head.value
+        if current.next is not None:
+            current.value = current.next.value
+            current.next = current.next.next
+
+        elif current.next is None:
+            self.head = Node('', None)
         return result
 
+    def empty(self):
+        if self.head is None:
+            return True
+        return False
+    
+    def bub_sort(self):
+        end = None
+        while end != self.head:
+            r = first = self.head
+            while first.next != end:
+                second = first.next
+                if first.value > second.value:
+                    first.next = second.next
+                    second.next = first
+                    if first != self.head:
+                        r.next = second
+                    else:
+                        self.head = second
+                    first, second = second, first
+                r = first
+                first = first.next
+            end = first
 
-
-    """не работает не мпеняет местами"""
-    def selection_sort(self):
-        def len(self):
-            length = 1
-            if self.first is not None:
-                current = self.first
-                while current.next is not None:
-                    current = current.next
-                    length += 1
-            return length
-
-        def search2(index):
-            lenght = 0
-            if self.first is None:
-                return "list is empty"
-            current = self.first
-            if index == 0:
-                return current.value
-            while current.next is not None:
-                lenght += 1
-                current = current.next
-                if index == lenght:
-                    return current.value
-            return "not in list"
-        lenght = len(self)
-        index = 0
-        #print(search2(self,index))
-        while index < lenght - 1:
-            smallest = index
-            j = index + 1
-
-            while j < lenght:
-                if search2(j) < search2(index):
-                    smallest = j
-                j += 1
-            a, b = search2(index), search2(smallest)
-            a, b = search2(smallest), search2(index)
-            index += 1
-        return self
-
-
-
-
-o = FLL()
-o.add(4)
-o.add(3)
-o.add(2)
-#o.addAfter(1, 9)
-#o.addAfter(1, 9)
-print(o)
-#o.delAfter(1)
-#o.selection_sort()
-print(o.sort())
+#o = LinkedList()
+#o.add(4)
+#o.add(3)
+#o.add(2)
+#o.bub_sort()
+#print(o)
+#print(o.empty())
+#o.del_first()
+#o.del_first()
+#o.del_first()
+#print(o)
+#o.add(8)
+#o.add(6)
+#o.add(7)
+#o.addAfter1(12, 9)
+#o.addAfter1(1, 9)
+#print(o)
+#o.del_first()
+#o.bubblesort1()
+#o.delAfter1(3)
+#print(o)
+#print(o)
 
