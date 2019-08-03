@@ -9,15 +9,23 @@ class BinaryTree:
     def __init__(self):
         self.root = None
 
-    def addSup(self, nvalue, elem):
+    def __iter__(self):
+        return self.root.__iter__()
+
+    def is_empty(self):
+        if self.root is None:
+            return True
+        return False
+
+    def add_sup(self, nvalue, elem):
         if elem.value > nvalue:
             if elem.left is not None:
-                self.addSup(nvalue, elem.left)
+                self.add_sup(nvalue, elem.left)
             else:
                 elem.left = Node(nvalue)
         else:
             if elem.right is not None:
-                self.addSup(nvalue, elem.right)
+                self.add_sup(nvalue, elem.right)
             else:
                 elem.right = Node(nvalue)
 
@@ -25,7 +33,7 @@ class BinaryTree:
         if self.root is None:
             self.root = Node(nvalue)
         else:
-            self.addSup(nvalue, self.root)
+            self.add_sup(nvalue, self.root)
 
     def find(self, elem):
         current = self.root
@@ -38,30 +46,30 @@ class BinaryTree:
                 current = current.right
         return False
 
-    def printTree(self):
-        if self.root is not None:
-            self.printTreeSupp(self.root)
-
-    def printTreeSupp(self, elem):
-        if elem is not None:
-            self.printTreeSupp(elem.left)
-            print(str(elem.value) + ' ')
-            self.printTreeSupp(elem.right)
-
-    def minimum_element(self, node):
+    def print_tree(self):
         if self.root is None:
-            print("Empty BST")
+            print("the tree is empty")
         else:
-            while (node.left is not None):
-                node = node.left
-            #print(node.data)
-            return node
+            self.print_tree_supp(self.root)
+
+    def print_tree_supp(self, elem):
+        if elem is not None:
+            self.print_tree_supp(elem.left)
+            print(str(elem.value) + ' ')
+            self.print_tree_supp(elem.right)
 
     def delete(self, goal):
         flag = 0
         if self.root is None:
-            print("The list is empty")
+            print("The tree is empty")
         else:
+            if self.root.value == goal:
+                if self.root.left is None and self.root.right is None:
+                    self.root = None
+                    return
+                elif self.root.left is not None and self.root.right is None:
+                    self.root = self.root.left
+                    return
             parent = None
             current = self.root
             replace_node = None
@@ -85,7 +93,7 @@ class BinaryTree:
                     del current
 
                 elif (current.left is None) or (current.right is None):
-                    if current.leftchild is None:
+                    if current.left is None:
                         if flag:
                             parent.right = current.right
                         else:
@@ -103,6 +111,21 @@ class BinaryTree:
                     self.delete(replace_node.value)
                     current.value = temp
 
+    def minimum_element(self, node):
+        if self.root is None:
+            print("Empty BST")
+        else:
+            while (node.left is not None):
+                node = node.left
+            #print(node.data)
+            return node
+
+    def max_elem(self):
+        node = self.root.left
+        while node.right is not None:
+            node = node.right
+        return node.value
+
     def height(self, node):
         if node is None:
             return 0
@@ -114,52 +137,8 @@ class BinaryTree:
                 return lheight + 1
             else:
                 return rheight + 1
-    """    def output123(self):
-        if self.root is None:
-            return "empty"
-        current = self.root
-        while current is not None:
-            l = []
-            flag = 1
-            if current.left is not None:
-                l.append(current.left.value)
-            if current.right is not None:
-                flag = 0
-                l.extend(["|", current.right.value])
-            if flag:
-                l.append("|")
-            for i in l:
-                print(i,  end="")
 
-            l.clear()
-            print("\n")
-
-            currentleft = current.left
-            if currentleft.left is not None:
-                l.append(currentleft.left.value)
-            if currentleft.right is not None:
-                flag = 0
-                l.extend(["|", currentleft.right.value])
-            if flag:
-                l.append("|")
-            for i in l:
-                print(i, end="")
-
-            l.clear()
-            print("  ", end="")
-
-            currentright = current.right
-            if currentright.left is not None:
-                l.append(currentright.left.value)
-            if currentright.right is not None:
-                flag = 0
-                l.extend(["|", currentright.right.value])
-            if flag:
-                l.append("|")
-            for i in l:
-                print(i, end="")"""
-
-    def outputSup(self, elem):
+    def output_sup(self, elem):
         rflag, lflag = 0, 0
         print('root: {0}'.format(elem.value))
         if elem.left is not None:
@@ -175,39 +154,45 @@ class BinaryTree:
             print('right:  '+"\n")
 
         if lflag:
-            self.outputSup(elem.left)
+            self.output_sup(elem.left)
         if rflag:
-            self.outputSup(elem.right)
+            self.output_sup(elem.right)
 
     def output(self):
         print()
         if self.root is None:
             return "empty"
-        self.outputSup(self.root)
-"""    def outputSup123(self, elem):
-        if elem is not None:
-            spaces = self.height(self.root)
+        self.output_sup(self.root)
 
-            s = '    '
-            data = {0: self.root}
-            if elem.left is not None:
-                print(s + str(elem.left.value))
-            else:
-                print(s + '  ')
-            if elem.right is not None:
-                print(s + str(elem.right.value))
-            else:
-                print(s + ' ')
-            print("|||")
-            self.outputSup123(elem.left)
-            print("left")
-            self.outputSup123(elem.right)
+    def out_sup(self, elem, i):
+        lflag, rflag = 0, 0
+        s = " " * (self.height(self.root) - 1 - i)
+        if elem.left is not None:
+            s += str(elem.left.value) + " "
+            lflag = 1
+        else:
+            s += " "
+        if elem.right is not None:
+            s += str(elem.right.value) + ' '
+            rflag = 1
+        else:
+            s += " "
+        print(s)
+        i += 1
+        if lflag:
+            self.out_sup(elem.left, i)
+        if rflag:
+            self.out_sup(elem.right, i)
 
-    def output123(self):
-        print()
-        print(self.root.value)
-        self.outputSup123(self.root)"""
-
+    def out(self):
+        if self.root is None:
+            print("the tree is empty")
+            return
+        spaces = self.height(self.root)
+        s = " "*(spaces-1) + str(self.root.value)
+        print(s)
+        i = 1
+        self.out_sup(self.root, i)
 
 
 tree = BinaryTree()
@@ -216,12 +201,21 @@ tree.add(4)
 tree.add(30)
 tree.add(8)
 tree.add(1)
-#print(tree.find(8))
-tree.add(15)
 tree.add(35)
+tree.add(15)
+tree.add(40)
+tree.out()
+#tree.delete(40)
+#print(tree.max_elem())
+#tree.delete(9)
+#tree.del_elem(9)
+#tree.add(1)
+#print(tree.find(8))
+#tree.add(15)
+#tree.add(35)
 #tree.add(0)
-tree.printTree()
-tree.output()
+#tree.print_tree()
+#tree.output()
 #tree.output123()
 #tree.add(0)
 #print(tree.height(tree.root))
